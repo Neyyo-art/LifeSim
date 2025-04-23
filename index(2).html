@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LifeSim - ASCII Avatar Edition</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #fff; padding: 1rem; }
+    #game { max-width: 600px; margin: auto; padding: 1rem; background: #222; border-radius: 10px; }
+    .option, select { margin-top: 10px; padding: 10px; background: #333; color: #fff; border-radius: 5px; border: none; width: 100%; }
+    .option:hover { background: #444; cursor: pointer; }
+    .ascii-avatar { font-size: 18px; white-space: pre; text-align: center; margin-top: 10px; }
+    .log { margin-top: 20px; white-space: pre-wrap; color: #ccc; }
+    .custom-menu { margin-top: 15px; background: #111; padding: 10px; border: 1px solid #333; }
+    label { display: block; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h1>LifeSim</h1>
+    <div id="asciiAvatar" class="ascii-avatar"></div>
+    <div id="character-info"></div>
+
+    <div class="option" onclick="ageUp()">Age Up</div>
+    <div class="option" onclick="toggleCustomization()">Customize Avatar</div>
+
+    <div class="custom-menu" id="customizationMenu" style="display:none;">
+      <label>Gender:
+        <select onchange="customize('gender', this.value)">
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+      </label>
+      <label>Skin Tone:
+        <select onchange="customize('skinTone', this.value)">
+          <option>light</option>
+          <option>tan</option>
+          <option>dark</option>
+        </select>
+      </label>
+      <label>Eye Shape:
+        <select onchange="customize('eyeShape', this.value)">
+          <option>round</option>
+          <option>almond</option>
+          <option>monolid</option>
+        </select>
+      </label>
+      <label>Hair Type:
+        <select onchange="customize('hair', this.value)">
+          <option>straight</option>
+          <option>wavy</option>
+          <option>curly</option>
+          <option>coily</option>
+        </select>
+      </label>
+      <label>Nose:
+        <select onchange="customize('nose', this.value)">
+          <option>small</option>
+          <option>medium</option>
+          <option>broad</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    let character = {
+      name: "Alex",
+      age: 0,
+      gender: "Male",
+      skinTone: "light",
+      eyeShape: "round",
+      nose: "medium",
+      hair: "straight"
+    };
+
+    function ageUp() {
+      character.age++;
+      log(`You are now ${character.age} years old.`);
+      updateAll();
+    }
+
+    function customize(trait, value) {
+      character[trait] = value;
+      updateAll();
+    }
+
+    function toggleCustomization() {
+      const menu = document.getElementById("customizationMenu");
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    function updateAll() {
+      updateInfo();
+      drawAsciiAvatar();
+    }
+
+    function updateInfo() {
+      const info = `
+        Name: ${character.name}
+        Age: ${character.age}
+        Gender: ${character.gender}
+        Skin: ${character.skinTone}
+        Hair: ${character.hair}
+        Eyes: ${character.eyeShape}
+        Nose: ${character.nose}
+      `;
+      document.getElementById("character-info").innerText = info;
+    }
+
+    function drawAsciiAvatar() {
+      const { gender, skinTone, eyeShape, nose, hair, age } = character;
+
+      let eyes = eyeShape === "round" ? "o o" :
+                 eyeShape === "almond" ? "< >" :
+                 "- -";
+
+      let hairline = hair === "straight" ? "|||||||||" :
+                     hair === "wavy" ? "~^~^~^~" :
+                     hair === "curly" ? "@@@@@" :
+                     "#####";
+
+      let noseChar = nose === "small" ? "^" :
+                     nose === "broad" ? "U" : "|";
+
+      let skinColor = skinTone === "light" ? "#fff" :
+                      skinTone === "tan" ? "#fc8" :
+                      "#c96";
+
+      const face = `
+        ${hairline}
+       /       \\
+      |  ${eyes}  |
+      |    ${noseChar}    |
+      |   ---   |
+       \\_____/  Age: ${age}
+      `;
+
+      document.getElementById("asciiAvatar").innerHTML =
+        `<span style="color:${skinColor}">${face}</span>`;
+    }
+
+    function log(text) {
+      const logBox = document.getElementById("log");
+      logBox.innerText = text + "\n\n" + logBox.innerText;
+    }
+
+    // Init
+    updateAll();
+  </script>
+</body>
+</html>
